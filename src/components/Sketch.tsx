@@ -24,12 +24,41 @@ const sketch = (p: p5): void => {
         p.createSpan("Alive: 500").id("#alive").position(20, 60).style('color', '#fff').style('font-size', '30px')
         p.createSpan("Fittest: 0").id("#fittest").position(20, 100).style('color', '#fff').style('font-size', '30px')
         p.createSpan("User Score: 0").id("#score").position(20, 140).style('color', '#fff').style('font-size', '30px')
-        slider = p.createSlider(1, 10, 1);
+        slider = p.createSlider(1, 10, 1).id('#slider');
         for (let i = 0; i < TOTAL; i++) {
             birds.push(new Bird(p));
         }
         user = new User(p)
-        
+        const importButton = p.select('#gene-import')
+        const geneEditor = p.select('#gene-editor-textarea')
+        importButton.mouseClicked(() => {
+            if (geneEditor.value() === '')
+                return
+
+            const importValue = geneEditor.value().toString()
+            const genes = importValue.split('\n').map(row => row.split(' ').map(val => parseFloat(val)))
+            user.reset(p)
+            counter = 0
+            pipes = []
+            pipes.push(new Pipe(p));
+            counter++
+            deadCount = 0
+            generation = 0
+            birds = [...birds, ...savedBirds]
+            savedBirds = []
+    
+            birds.forEach((bird, idx) => { 
+                bird.applyGenes(genes[idx])
+                bird.reset(p) 
+            })
+        })
+
+        const exportButton = p.select('#gene-export')
+        exportButton.mouseClicked(() => {
+            console.log(birds.length)
+            const exportValue = [ ...birds, ...savedBirds ].map(bird => bird.network.exportGenes().join(' ')).join('\n')
+            geneEditor.value(exportValue)
+        })
     }
 
     p.draw = (): void => { 
@@ -78,19 +107,19 @@ const sketch = (p: p5): void => {
                 calculateFitness(p, savedBirds);
                 fittest = 0
                 for (let i = savedBirds.length - 1; i >= 0; i--) {
-                if (fittest < savedBirds[i].fitness) {
-                    fittest = savedBirds[i].fitness
-                    document.getElementById("#fittest").innerHTML = `Fittest: ${Math.round(fittest * 100) / 100}`
+                    if (fittest < savedBirds[i].fitness) {
+                        fittest = savedBirds[i].fitness
+                        document.getElementById("#fittest").innerHTML = `Fittest: ${Math.round(fittest * 100) / 100}`
+                    }
                 }
-            }
-            document.getElementById("#score").innerHTML = `User Score: ${Math.round(user.score * 100) / 100}`
-            birds = generateNextGenAlt(p, savedBirds);
-            user.reset(p)
-            savedBirds = []
-            pipes = [];
-            generation += 1
-            deadCount = 0
-            document.getElementById("#count").innerHTML = `Generations: ${generation}`
+                document.getElementById("#score").innerHTML = `User Score: ${Math.round(user.score * 100) / 100}`
+                birds = generateNextGenAlt(p, savedBirds);
+                user.reset(p)
+                savedBirds = []
+                pipes = [];
+                generation += 1
+                deadCount = 0
+                document.getElementById("#count").innerHTML = `Generations: ${generation}`
             }
         }
     }
@@ -100,7 +129,6 @@ const sketch = (p: p5): void => {
             user.up();
           }
     }
-
 }
 
 const Sketch: React.FC = () => {

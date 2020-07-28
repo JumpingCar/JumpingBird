@@ -79,7 +79,7 @@ export default class Pipe {
 
     reset(p: p5) : void {
         this.height = p.height
-        this.space = this.height / 10
+        this.space = this.height / 11
 
         this.topL = this.makeRandom( this.height / 12, 4 / 12 * this.height )
         this.top = this.topL
