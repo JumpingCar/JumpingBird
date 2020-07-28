@@ -10,36 +10,35 @@ import Pipe from "./pipe"
 // Neuro-Evolution Flappy Bird
 
 export class Bird {
-
-    x : number
-    y : number
-    gravity : number
-    lift : number
-    velocity : number
-    height : number
-    score : number
-    fitness : number
-    network : NeuralNetwork
-    raySensor : number[]
-    dead : boolean
-    cool : number
-    jumping : boolean
-    inputs : number[]
-    wasTop : number
+    x: number
+    y: number
+    gravity: number
+    lift: number
+    velocity: number
+    height: number
+    score: number
+    fitness: number
+    network: NeuralNetwork
+    raySensor: number[]
+    dead: boolean
+    cool: number
+    jumping: boolean
+    inputs: number[]
+    wasTop: number
 
     constructor(p: p5) {
         this.reset(p)
         this.network = new NeuralNetwork(5, 5, 2)
     }
 
-    show(p: p5) : void {
-      p.noStroke();
-      p.fill(255);
-      p.ellipse(this.x, this.y, 32, 32);
+    show(p: p5): void {
+        p.noStroke();
+        p.fill(255);
+        p.ellipse(this.x, this.y, 32, 32);
     }
 
-    up() : void {
-      this.velocity += this.lift;
+    up(): void {
+        this.velocity += this.lift;
     }
 
     static selection(birds: Bird[], pairs: number): Bird[][] {
@@ -48,14 +47,14 @@ export class Bird {
         // car of highest fitness gets 10 quotas
         const fitnessList = birds.reduce((list, car, idx) => {
             const quota = Math.floor(car.fitness / maxFitness * 10)
-            return [ ...list, ...Array(quota).fill(idx) ]
+            return [...list, ...Array(quota).fill(idx)]
         }, [])
 
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         return Array(pairs).fill(0).reduce((acc, _) => {
             const mom = fitnessList[Math.floor(Math.random() * fitnessList.length)]
             const dad = fitnessList[Math.floor(Math.random() * fitnessList.length)]
-            return [ ...acc, [birds[mom], birds[dad]] ]
+            return [...acc, [birds[mom], birds[dad]]]
         }, [])
     }
 
@@ -63,7 +62,7 @@ export class Bird {
         return output.matrix[0][0] > output.matrix[1][0]
     }
 
-    update(p: p5, pipes: Pipe[]) : void {
+    update(p: p5, pipes: Pipe[]): void {
         if (!this.dead) {
             this.look(p, pipes)
             const output = this.network.feedforward(this.raySensor)
@@ -78,9 +77,9 @@ export class Bird {
             this.velocity += this.gravity;
             this.y += this.velocity;
         }
-}
+    }
 
-    look(p: p5, pipes: Pipe[]) : void {
+    look(p: p5, pipes: Pipe[]): void {
         let closest = null;
         let closestD = Infinity;
         for (let i = 0; i < pipes.length; i++) {
@@ -94,7 +93,7 @@ export class Bird {
         this.raySensor[1] = (closest.top + (closest.space / 2)) / p.height
         this.raySensor[2] = (closest.bottom + (closest.space / 2)) / p.height
         this.raySensor[3] = this.velocity / 10;
-        this.raySensor[4] =  this.y / p.height;
+        this.raySensor[4] = this.y / p.height;
 
         this.inputs = [];
         this.inputs[0] = this.y / p.height;
@@ -102,16 +101,17 @@ export class Bird {
         this.inputs[2] = closest.bottom / p.height;
         this.inputs[3] = closest.x / p.width;
         this.inputs[4] = this.velocity / 10;
-        }
+    }
 
     applyGenes(genes: number[]): void {
         this.network.importGenes(genes)
     }
 
-    offScreen() : boolean {
+    offScreen(): boolean {
         return (this.y > this.height || this.y < 0);
-      }
-    reset(p: p5) : void {
+    }
+
+    reset(p: p5): void {
         this.dead = false
         this.x = 1500;
         this.height = p.height
@@ -127,4 +127,4 @@ export class Bird {
         this.inputs = new Array(5).fill(-50)
         this.wasTop = 0;
     }
-  }
+}
