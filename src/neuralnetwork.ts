@@ -33,7 +33,7 @@ export default class NeuralNetwork {
                     Matrix.dot(this.weights[i - 1], this.layers[i - 1]),
                     this.bias[i - 1]
                 ),
-                100
+                1
             )
 
         return this.layers[this.layers.length - 1]

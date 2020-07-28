@@ -33,7 +33,9 @@ export default class Pipe {
     }
 
     show(p: p5) : void {
-        p.fill(107, 164, 255);
+        p.stroke(107, 164, 255);
+        p.strokeWeight(4);
+        p.noFill();
         p.rectMode(p.CORNER);
         p.rect(this.x, 0, this.width, this.top);
         p.rect(this.x, this.top + this.space, this.width, this.bottom);

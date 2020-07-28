@@ -22,14 +22,16 @@ export class Bird {
     network : NeuralNetwork
     raySensor : number[]
     dead : boolean
-
+    cool : number
+    jumping : boolean
+    inputs : number[]
     constructor(p: p5) {
         this.reset(p)
-        this.network = new NeuralNetwork(this.raySensor.length, 6, 1)
+        this.network = new NeuralNetwork(4, 4, 2)
     }
 
     show(p: p5) : void {
-      p.stroke(133);
+      p.noStroke();
       p.fill(255);
       p.ellipse(this.x, this.y, 32, 32);
     }
@@ -56,22 +58,24 @@ export class Bird {
     }
 
     static adjust(output: Matrix): boolean {
-        return output.matrix[0][0] > 0.5
+        return output.matrix[0][0] > output.matrix[1][0]
     }
 
     update(p: p5, pipes: Pipe[]) : void {
-        const output = this.network.feedforward(this.raySensor)
-        const decision = Bird.adjust(output)
         if (!this.dead) {
+            this.look(p, pipes)
+            const output = this.network.feedforward(this.raySensor)
+            const decision = Bird.adjust(output)
             if (decision) {
                 this.up()
+                this.jumping = true
             }
+
+            this.show(p)
+            this.score++;
+            this.velocity += this.gravity;
+            this.y += this.velocity;
         }
-        this.show(p)
-        this.look(p, pipes)
-        this.score++;
-        this.velocity += this.gravity;
-        this.y += this.velocity;
 }
 
     look(p: p5, pipes: Pipe[]) : void {
@@ -84,9 +88,18 @@ export class Bird {
                 closestD = d;
             }
         }
-        this.raySensor[0] = closestD
-        this.raySensor[1] = closest.top + (closest.space / 2)
-    }
+        this.raySensor[0] = closestD / p.width
+        this.raySensor[1] = (closest.top + (closest.space / 2)) / p.height
+        this.raySensor[2] = this.velocity / 10;
+        this.raySensor[3] =  this.y / p.height;
+
+        this.inputs = [];
+        this.inputs[0] = this.y / p.height;
+        this.inputs[1] = closest.top / p.height;
+        this.inputs[2] = closest.bottom / p.height;
+        this.inputs[3] = closest.x / p.width;
+        this.inputs[4] = this.velocity / 10;
+        }
 
     applyGenes(genes: number[]): void {
         this.network.importGenes(genes)
@@ -97,7 +110,7 @@ export class Bird {
       }
     reset(p: p5) : void {
         this.dead = false
-        this.x = 1600;
+        this.x = 1500;
         this.height = p.height
         this.y = this.height / 2
         this.gravity = 0.8;
@@ -106,5 +119,8 @@ export class Bird {
         this.score = 0;
         this.fitness = 0;
         this.raySensor = new Array(2).fill(-50)
+        this.cool = 0
+        this.jumping = false
+        this.inputs = new Array(5).fill(-50)
     }
   }
