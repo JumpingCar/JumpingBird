@@ -113,7 +113,7 @@ export class Bird {
 
     reset(p: p5): void {
         this.dead = false
-        this.x = 1500;
+        this.x = p.width / 2;
         this.height = p.height
         this.y = this.height / 2
         this.gravity = 0.8;
