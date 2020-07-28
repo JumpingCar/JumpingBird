@@ -15,13 +15,7 @@ export default class Pipe {
     speed : number
 
     constructor (p: p5) {
-        this.space = 250
-        this.height = p.height
-        this.top = this.makeRandom( this.height / 6, 3 / 4 * this.height )
-        this.bottom = this.height - (this.top + this.space)
-        this.width = 80
-        this.x = p.width
-        this.speed = 6;
+        this.reset(p)
     }
 
     hits(bird : Bird) : boolean {
@@ -51,6 +45,16 @@ export default class Pipe {
 
     offscreen(p: p5) : boolean {
         return this.x < - p.windowWidth / 2;
+    }
+
+    reset(p: p5) : void {
+        this.space = 250
+        this.height = p.height
+        this.top = this.makeRandom( this.height / 6, 3 / 4 * this.height )
+        this.bottom = this.height - (this.top + this.space)
+        this.width = 80
+        this.x = p.width
+        this.speed = 6;
     }
 
 }

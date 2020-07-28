@@ -3,7 +3,7 @@ import { useEffect } from 'react'
 import * as p5 from 'p5'
 import { Bird } from '../bird';
 import Pipe from '../pipe';
-import { generateNextGenAlt } from '../ga';
+import { generateNextGenAlt, calculateFitness } from '../ga';
 
 const sketch = (p: p5): void => {
     let generation = 0
@@ -19,8 +19,8 @@ const sketch = (p: p5): void => {
     p.setup = (): void => {
         p.createCanvas(p.windowWidth, p.windowHeight)
         p.createSpan("Generations: 0").id("#count").position(20, 20).style('color', '#fff').style('font-size', '30px')
-        p.createSpan("Alive: ?").id("#alive").position(20, 60).style('color', '#fff').style('font-size', '30px')
-        p.createSpan("Fittest").id("#fittest").position(20, 100).style('color', '#fff').style('font-size', '30px')
+        p.createSpan("Alive: 50").id("#alive").position(20, 60).style('color', '#fff').style('font-size', '30px')
+        p.createSpan("Fittest: 0").id("#fittest").position(20, 100).style('color', '#fff').style('font-size', '30px')
         slider = p.createSlider(1, 10, 1);
         for (let i = 0; i < TOTAL; i++) {
             birds.push(new Bird(p));
@@ -64,7 +64,10 @@ const sketch = (p: p5): void => {
 
             if (birds.length === 0) {
               counter = 0;
+              calculateFitness(p, savedBirds);
               for (let i = savedBirds.length - 1; i >= 0; i--) {
+                console.log(savedBirds[i].fitness, fittest)
+
                 if (fittest < savedBirds[i].fitness) {
                     fittest = savedBirds[i].fitness
                     console.log(savedBirds[i].fitness)
@@ -77,7 +80,6 @@ const sketch = (p: p5): void => {
             generation += 1
             deadCount = 0
             document.getElementById("#count").innerHTML = `Generations: ${generation}`
-            return
             }
         }
     }
