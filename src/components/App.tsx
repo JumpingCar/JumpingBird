@@ -1,7 +1,15 @@
 import * as React from 'react'
+import Sketch from './Sketch'
 
-const App = () => {
-    return <div>Template</div>
+
+const App: React.FC = () => {
+    
+
+    return (
+        <div>
+            <Sketch />
+        </div>
+    )
 }
 
 export default App
