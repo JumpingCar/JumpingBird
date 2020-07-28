@@ -128,9 +128,20 @@ const sketch = (p: p5): void => {
     }
 
     p.keyPressed = (): void => { 
-        if (p.key == ' ') {
+        if (p.key === ' ') {
             user.up();
-          }
+        } else if (p.key === 'q') {
+            user.reset(p)
+            counter = 0
+            pipes = []
+            pipes.push(new Pipe(p));
+            counter++
+            deadCount = 0
+            generation = 0
+            birds = [...birds, ...savedBirds]
+            savedBirds = []
+            birds.forEach(bird => { bird.reset(p) })
+        }
     }
 }
 
