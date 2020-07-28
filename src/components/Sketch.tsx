@@ -68,13 +68,13 @@ const sketch = (p: p5): void => {
                 pipes.push(new Pipe(p));
             }
             counter++;
-        
+
             for (let i = pipes.length - 1; i >= 0; i--) {
                 pipes[i].update();
                 pipes[i].show(p);
                 for (let j = birds.length - 1; j >= 0; j--) {
                     if (pipes[i].hits(birds[j])) {
-                    birds[j].dead = true;
+                        birds[j].dead = true;
                     }
                 }
                 if ( pipes[i].hitsForUser(user)) {
@@ -101,6 +101,9 @@ const sketch = (p: p5): void => {
                 bird.update(p, pipes);
             }
             user.update(p);
+
+            if (birds.length !== 0) 
+                birds[0].network.show(p)
 
             if (birds.length === 0 && user.dead) {
                 counter = 0;
