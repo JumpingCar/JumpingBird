@@ -26,20 +26,22 @@ export class Bird {
 
     constructor(p: p5) {
         this.dead = false
-        this.y = this.height / 2;
         this.x = 64;
-        this.height = p.windowHeight
+        this.height = p.height
+        this.y = this.height / 2
         this.gravity = 0.8;
         this.lift = -12;
         this.velocity = 0;
         this.score = 0;
         this.fitness = 0;
+        this.pipes =
+        this.raySensor = new Array(2).fill(-50)
         this.network = new NeuralNetwork(this.raySensor.length, 6, 1)
     }
 
     show(p: p5) : void {
-      p.stroke(255);
-      p.fill(255, 100);
+      p.stroke(133);
+      p.fill(255);
       p.ellipse(this.x, this.y, 32, 32);
     }
 
@@ -68,7 +70,7 @@ export class Bird {
         return output.matrix[0][0] > 0.5
     }
 
-    update(p: p5) : void {
+    update(p: p5, pipes: Pipe[]) : void {
         const output = this.network.feedforward(this.raySensor)
         const decision = Bird.adjust(output)
         if (!this.dead) {
@@ -77,7 +79,7 @@ export class Bird {
             }
         }
         this.show(p)
-        this.look(p, this.pipes)
+        this.look(p, pipes)
         this.score++;
         this.velocity += this.gravity;
         this.y += this.velocity;

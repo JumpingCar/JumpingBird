@@ -6,12 +6,16 @@ import Pipe from '../pipe';
 import { generateNextGenAlt } from '../ga';
 
 const sketch = (p: p5): void => {
-    let slider: p5.Element;
+    let generation = 0
+    let deadCount = 0;
     const TOTAL = 50;
-    const birds : Bird[] = [];
+    let slider: p5.Element;
+    let birds : Bird[] = [];
+    console.log("wtf")
     let counter = 0;
     let pipes : Pipe[] = [];
-    const savedBirds : Bird[] = [];
+    let savedBirds : Bird[] = [];
+    let fittest = 0;
 
     p.setup = (): void => {
         p.createCanvas(p.windowWidth, p.windowHeight)
@@ -20,46 +24,61 @@ const sketch = (p: p5): void => {
         p.createSpan("Fittest").id("#fittest").position(20, 100).style('color', '#fff').style('font-size', '30px')
         slider = p.createSlider(1, 10, 1);
         for (let i = 0; i < TOTAL; i++) {
-            birds[i] = new Bird(p);
-        }    
+            birds.push(new Bird(p));
+        }
     }
 
-    p.draw = (): void => {
+    p.draw = (): void => { 
+        // console.log(birds.length, "`")
         p.background(50)
         for (let n = 0; n < slider.value(); n++) {
             if (counter % 75 == 0) {
-              pipes.push(new Pipe(p));
+                pipes.push(new Pipe(p));
             }
             counter++;
         
             for (let i = pipes.length - 1; i >= 0; i--) {
-              pipes[i].update();
-        
-              for (let j = birds.length - 1; j >= 0; j--) {
-                if (pipes[i].hits(birds[j])) {
-                  birds[j].dead = true;
+                pipes[i].update();
+                pipes[i].show(p);
+                for (let j = birds.length - 1; j >= 0; j--) {
+                    if (pipes[i].hits(birds[j])) {
+                    birds[j].dead = true;
+                    }
                 }
-              }
-        
-              if (pipes[i].offscreen(p)) {
-                pipes.splice(i, 1);
-              }
+            
+                if (pipes[i].offscreen(p)) {
+                    pipes.splice(i, 1);
+                }
             }
         
             for (let i = birds.length - 1; i >= 0; i--) {
                 if (birds[i].offScreen() || birds[i].dead) {
-                    savedBirds.push(birds.splice(i, 1)[0]);              
+                    deadCount += 1
+                    document.getElementById("#alive").innerHTML = `Alive: ${TOTAL - deadCount}`
+                    if (fittest < birds[i].fitness) {
+                        fittest = birds[i].fitness
+                        document.getElementById("#fittest").innerHTML = `Fittest: ${Math.round(fittest * 100) / 100}`
                     }
+                    savedBirds.push(birds.splice(i, 1)[0]);
                 }
-        
-            for (const bird of birds) {
-              bird.update(p);
             }
-        
+      
+            for (const bird of birds) {
+                // console.log(birds.length, "`")
+                bird.update(p, pipes);
+            }
+            
+
             if (birds.length === 0) {
               counter = 0;
-              generateNextGenAlt(p, savedBirds);
+              birds = generateNextGenAlt(p, savedBirds);
+            //   console.log(birds.length)
+              savedBirds = []
               pipes = [];
+              generation += 1
+              deadCount = 0
+              document.getElementById("#count").innerHTML = `Generations: ${generation}`
+              return
             }
           }
     }

@@ -15,12 +15,12 @@ export default class Pipe {
     speed : number
 
     constructor (p: p5) {
-        this.space = 125
+        this.space = 250
         this.height = p.windowHeight
         this.top = this.makeRandom( this.height / 6, 3 / 4 * this.height )
         this.bottom = this.height - (this.top + this.space)
         this.width = 80
-        this.x = p.windowWidth / 2;
+        this.x = p.windowWidth;
         this.speed = 6;
     }
 
