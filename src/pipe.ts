@@ -93,7 +93,7 @@ export default class Pipe {
 
         this.width = 80
         this.x = p.width
-        this.speed = 6;
+        this.speed = 15;
     }
 
 }
