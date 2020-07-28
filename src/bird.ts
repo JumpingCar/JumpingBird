@@ -22,20 +22,9 @@ export class Bird {
     network : NeuralNetwork
     raySensor : number[]
     dead : boolean
-    pipes : Pipe[]
 
     constructor(p: p5) {
-        this.dead = false
-        this.x = 64;
-        this.height = p.height
-        this.y = this.height / 2
-        this.gravity = 0.8;
-        this.lift = -12;
-        this.velocity = 0;
-        this.score = 0;
-        this.fitness = 0;
-        this.pipes =
-        this.raySensor = new Array(2).fill(-50)
+        this.reset(p)
         this.network = new NeuralNetwork(this.raySensor.length, 6, 1)
     }
 
@@ -106,4 +95,16 @@ export class Bird {
     offScreen() : boolean {
         return (this.y > this.height || this.y < 0);
       }
+    reset(p: p5) : void {
+        this.dead = false
+        this.x = 1600;
+        this.height = p.height
+        this.y = this.height / 2
+        this.gravity = 0.8;
+        this.lift = -12;
+        this.velocity = 0;
+        this.score = 0;
+        this.fitness = 0;
+        this.raySensor = new Array(2).fill(-50)
+    }
   }

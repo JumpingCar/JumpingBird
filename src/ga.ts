@@ -6,7 +6,6 @@ import { Bird } from "./bird"
 
 export function generateNextGenAlt(p: p5, birds: Bird[]): Bird[] {
     calculateFitness(p, birds);
-
     const sorted = birds.sort((p1: { fitness: number }, p2: { fitness: number }) => p2.fitness - p1.fitness)
     const topCount = 4
     const randomCount = 6
@@ -32,6 +31,7 @@ export function generateNextGenAlt(p: p5, birds: Bird[]): Bird[] {
     const children = [...topParents, ...random, ...offsprings]
     for (let i = 0; i < 50; i++) {
         birds[i].applyGenes(children[i])
+        birds[i].reset(p)
     }
     return birds
 }

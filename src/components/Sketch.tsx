@@ -11,7 +11,6 @@ const sketch = (p: p5): void => {
     const TOTAL = 50;
     let slider: p5.Element;
     let birds : Bird[] = [];
-    console.log("wtf")
     let counter = 0;
     let pipes : Pipe[] = [];
     let savedBirds : Bird[] = [];
@@ -29,7 +28,6 @@ const sketch = (p: p5): void => {
     }
 
     p.draw = (): void => { 
-        // console.log(birds.length, "`")
         p.background(50)
         for (let n = 0; n < slider.value(); n++) {
             if (counter % 75 == 0) {
@@ -55,32 +53,33 @@ const sketch = (p: p5): void => {
                 if (birds[i].offScreen() || birds[i].dead) {
                     deadCount += 1
                     document.getElementById("#alive").innerHTML = `Alive: ${TOTAL - deadCount}`
-                    if (fittest < birds[i].fitness) {
-                        fittest = birds[i].fitness
-                        document.getElementById("#fittest").innerHTML = `Fittest: ${Math.round(fittest * 100) / 100}`
-                    }
                     savedBirds.push(birds.splice(i, 1)[0]);
                 }
             }
       
             for (const bird of birds) {
-                // console.log(birds.length, "`")
                 bird.update(p, pipes);
             }
             
 
             if (birds.length === 0) {
               counter = 0;
-              birds = generateNextGenAlt(p, savedBirds);
-            //   console.log(birds.length)
-              savedBirds = []
-              pipes = [];
-              generation += 1
-              deadCount = 0
-              document.getElementById("#count").innerHTML = `Generations: ${generation}`
-              return
+              for (let i = savedBirds.length - 1; i >= 0; i--) {
+                if (fittest < savedBirds[i].fitness) {
+                    fittest = savedBirds[i].fitness
+                    console.log(savedBirds[i].fitness)
+                    document.getElementById("#fittest").innerHTML = `Fittest: ${Math.round(fittest * 100) / 100}`
+                }
             }
-          }
+            birds = generateNextGenAlt(p, savedBirds);
+            savedBirds = []
+            pipes = [];
+            generation += 1
+            deadCount = 0
+            document.getElementById("#count").innerHTML = `Generations: ${generation}`
+            return
+            }
+        }
     }
 }
 
