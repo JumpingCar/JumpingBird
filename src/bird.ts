@@ -25,9 +25,11 @@ export class Bird {
     cool : number
     jumping : boolean
     inputs : number[]
+    wasTop : number
+
     constructor(p: p5) {
         this.reset(p)
-        this.network = new NeuralNetwork(4, 4, 2)
+        this.network = new NeuralNetwork(5, 5, 2)
     }
 
     show(p: p5) : void {
@@ -90,8 +92,9 @@ export class Bird {
         }
         this.raySensor[0] = closestD / p.width
         this.raySensor[1] = (closest.top + (closest.space / 2)) / p.height
-        this.raySensor[2] = this.velocity / 10;
-        this.raySensor[3] =  this.y / p.height;
+        this.raySensor[2] = (closest.bottom + (closest.space / 2)) / p.height
+        this.raySensor[3] = this.velocity / 10;
+        this.raySensor[4] =  this.y / p.height;
 
         this.inputs = [];
         this.inputs[0] = this.y / p.height;
@@ -118,9 +121,10 @@ export class Bird {
         this.velocity = 0;
         this.score = 0;
         this.fitness = 0;
-        this.raySensor = new Array(2).fill(-50)
+        this.raySensor = new Array(4).fill(-50)
         this.cool = 0
         this.jumping = false
         this.inputs = new Array(5).fill(-50)
+        this.wasTop = 0;
     }
   }

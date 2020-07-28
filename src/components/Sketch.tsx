@@ -4,6 +4,7 @@ import * as p5 from 'p5'
 import { Bird } from '../bird';
 import Pipe from '../pipe';
 import { generateNextGenAlt, calculateFitness } from '../ga';
+import { User } from '../user';
 
 const sketch = (p: p5): void => {
     let generation = 0
@@ -15,16 +16,20 @@ const sketch = (p: p5): void => {
     let pipes : Pipe[] = [];
     let savedBirds : Bird[] = [];
     let fittest = 0;
+    let user : User;
 
     p.setup = (): void => {
         p.createCanvas(p.windowWidth, p.windowHeight)
         p.createSpan("Generations: 0").id("#count").position(20, 20).style('color', '#fff').style('font-size', '30px')
         p.createSpan("Alive: 500").id("#alive").position(20, 60).style('color', '#fff').style('font-size', '30px')
         p.createSpan("Fittest: 0").id("#fittest").position(20, 100).style('color', '#fff').style('font-size', '30px')
+        p.createSpan("User Score: 0").id("#score").position(20, 140).style('color', '#fff').style('font-size', '30px')
         slider = p.createSlider(1, 10, 1);
         for (let i = 0; i < TOTAL; i++) {
             birds.push(new Bird(p));
         }
+        user = new User(p)
+        
     }
 
     p.draw = (): void => { 
@@ -43,7 +48,10 @@ const sketch = (p: p5): void => {
                     birds[j].dead = true;
                     }
                 }
-            
+                if ( pipes[i].hitsForUser(user)) {
+                    user.dead = true;
+                }
+
                 if (pipes[i].offscreen(p)) {
                     pipes.splice(i, 1);
                 }
@@ -56,24 +64,28 @@ const sketch = (p: p5): void => {
                     savedBirds.push(birds.splice(i, 1)[0]);
                 }
             }
-      
+            if (user.offScreen()){
+                user.dead = true;
+            }
+
             for (const bird of birds) {
                 bird.update(p, pipes);
             }
-    
-            if (birds.length === 0) {
-              counter = 0;
-              calculateFitness(p, savedBirds);
-              fittest = 0
-              for (let i = savedBirds.length - 1; i >= 0; i--) {
+            user.update(p);
 
+            if (birds.length === 0 && user.dead) {
+                counter = 0;
+                calculateFitness(p, savedBirds);
+                fittest = 0
+                for (let i = savedBirds.length - 1; i >= 0; i--) {
                 if (fittest < savedBirds[i].fitness) {
                     fittest = savedBirds[i].fitness
-                    console.log(savedBirds[i].fitness)
                     document.getElementById("#fittest").innerHTML = `Fittest: ${Math.round(fittest * 100) / 100}`
                 }
             }
+            document.getElementById("#score").innerHTML = `User Score: ${Math.round(user.score * 100) / 100}`
             birds = generateNextGenAlt(p, savedBirds);
+            user.reset(p)
             savedBirds = []
             pipes = [];
             generation += 1
@@ -82,6 +94,13 @@ const sketch = (p: p5): void => {
             }
         }
     }
+
+    p.keyPressed = (): void => { 
+        if (p.key == ' ') {
+            user.up();
+          }
+    }
+
 }
 
 const Sketch: React.FC = () => {

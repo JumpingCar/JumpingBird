@@ -14,7 +14,7 @@ export function generateNextGenAlt(p: p5, birds: Bird[]): Bird[] {
     const hardMutationCount = 100
 
     const topParents = [...Array(topCount).keys()].map(idx => sorted[idx].network.exportGenes())
-    const random = [...Array(randomCount).keys()].map(_ => (new NeuralNetwork(4, 4, 2)).exportGenes())
+    const random = [...Array(randomCount).keys()].map(_ => (new NeuralNetwork(5, 5, 2)).exportGenes())
 
     const parentPairs = Bird.selection(birds, (offspringCount + hardMutationCount + softMutationCount) / 2)
     const offsprings: number[][] = parentPairs.reduce((nextgen, pair) => {
@@ -37,11 +37,7 @@ export function generateNextGenAlt(p: p5, birds: Bird[]): Bird[] {
 }
 
 export function calculateFitness(p: p5, savedBirds: Bird[]): void {
-    let sum = 0;
-    for (const bird of savedBirds) {
-      sum += bird.score;
-    }
-    for (const bird of savedBirds) {
-      bird.fitness = bird.score
-    }
+    for (const bird of savedBirds)
+        bird.fitness = bird.score
+
   }

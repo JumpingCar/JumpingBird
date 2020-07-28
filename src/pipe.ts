@@ -4,12 +4,18 @@
 
 import * as p5 from "p5"
 import { Bird } from "./bird"
+import { User } from "./user"
 
 export default class Pipe {
     height : number
     space : number
     top : number
+    topL : number
+    midUp : number
+    midDown : number
+    midL : number
     bottom : number
+    bottomL : number
     width : number
     x : number
     speed : number
@@ -19,13 +25,34 @@ export default class Pipe {
     }
 
     hits(bird : Bird) : boolean {
-        if (bird.y < this.top || bird.y > this.top + this.space) {
-            if (bird.x > this.x && bird.x < this.x + this.width) {
-                return true;
+        if (bird.x > this.x && bird.x < this.x + this.width) {
+            if (bird.y < this.top || this.midDown > bird.y &&  bird.y > this.midUp || bird.y > this.bottom ) {
+                    return true;
+            } else if ( this.top < bird.y && bird.y < this.midUp ) {
+                if ( bird.wasTop === -1 ) {
+                    bird.score *= 1 ;
+                }
+                bird.wasTop = 1
+            } else {
+                if ( bird.wasTop === 1 ) {
+                    bird.score *= 1 ;
+                }
+                bird.wasTop = -1
             }
+
         }
         return false;
     }
+
+    hitsForUser(user : User) : boolean {
+        if (user.x > this.x && user.x < this.x + this.width) {
+            if (user.y < this.top || this.midDown > user.y &&  user.y > this.midUp || user.y > this.bottom ) {
+                return true;
+            }
+        return false;
+        }
+    }
+
 
     makeRandom(min : number, max : number) : number{
         const RandVal = Math.floor(Math.random()*(max-min+1)) + min;
@@ -37,8 +64,9 @@ export default class Pipe {
         p.strokeWeight(4);
         p.noFill();
         p.rectMode(p.CORNER);
-        p.rect(this.x, 0, this.width, this.top);
-        p.rect(this.x, this.top + this.space, this.width, this.bottom);
+        p.rect(this.x, 0, this.width, this.topL);
+        p.rect(this.x, this.midUp, this.width, this.midL);
+        p.rect(this.x, this.bottom, this.width, this.bottomL);
     }
 
     update() : void {
@@ -50,10 +78,19 @@ export default class Pipe {
     }
 
     reset(p: p5) : void {
-        this.space = 250
         this.height = p.height
-        this.top = this.makeRandom( this.height / 6, 3 / 4 * this.height )
-        this.bottom = this.height - (this.top + this.space)
+        this.space = this.height / 10
+
+        this.topL = this.makeRandom( this.height / 12, 4 / 12 * this.height )
+        this.top = this.topL
+
+        this.midUp = this.topL + this.space
+        this.midL = this.makeRandom( 2 * this.height / 12, 5 / 12 * this.height )
+        this.midDown = this.midUp + this.midL
+
+        this.bottomL = this.height - (this.topL + this.space + this.midL + this.space)
+        this.bottom = this.midDown + this.space
+
         this.width = 80
         this.x = p.width
         this.speed = 6;
